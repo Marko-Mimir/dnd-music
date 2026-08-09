@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3 uid="uid://bot0k3k5e0elj"]
+
+[ext_resource type="Script" uid="uid://butk4i0ph1t74" path="res://scripts/downloadStatus.gd" id="1_k4prg"]
+
+[node name="downloadObject" type="HBoxContainer" node_paths=PackedStringArray("file_name", "download_progress", "Status")]
+theme_override_constants/separation = 18
+script = ExtResource("1_k4prg")
+file_name = NodePath("Name")
+download_progress = NodePath("Progress")
+Status = NodePath("Ident")
+
+[node name="Name" type="Label" parent="."]
+layout_mode = 2
+text = "File_name.exe"
+
+[node name="Progress" type="Label" parent="."]
+layout_mode = 2
+text = "0/100 MB"
+
+[node name="Ident" type="RichTextLabel" parent="."]
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=red]Starting..."
+fit_content = true
+scroll_active = false
+autowrap_mode = 0

@@ -1,0 +1,10 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://ido4ounyyjb"]
+
+[ext_resource type="FontFile" uid="uid://bx4lwshaxcagx" path="res://Fonts/Main.ttf" id="1_470mv"]
+
+[resource]
+default_font = ExtResource("1_470mv")
+MarginContainer/constants/margin_bottom = 4
+MarginContainer/constants/margin_left = 4
+MarginContainer/constants/margin_right = 4
+MarginContainer/constants/margin_top = 4

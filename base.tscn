@@ -1,0 +1,107 @@
+[gd_scene load_steps=5 format=3 uid="uid://bmjae8ddabott"]
+
+[ext_resource type="Script" uid="uid://japyrgl5tisv" path="res://scripts/DownloadManager.gd" id="1_ohhpf"]
+[ext_resource type="Script" uid="uid://ciypir12r106j" path="res://DependancyManager.gd" id="1_rpg24"]
+[ext_resource type="Theme" uid="uid://ido4ounyyjb" path="res://main_theme.tres" id="2_3vi8l"]
+[ext_resource type="PackedScene" uid="uid://bot0k3k5e0elj" path="res://downloadObj.tscn" id="2_8rhti"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="DownloadManager" type="Node2D" parent="." node_paths=PackedStringArray("dependancies")]
+script = ExtResource("1_ohhpf")
+dependancies = NodePath("../Dependancy")
+
+[node name="Dependancy" type="Node2D" parent="." node_paths=PackedStringArray("popup", "progress", "progressTarget")]
+script = ExtResource("1_rpg24")
+popup = NodePath("../CanvasLayer/DependancyPopup")
+progress = NodePath("../CanvasLayer/DownloadProgress")
+progressTarget = NodePath("../CanvasLayer/DownloadProgress/PanelContainer/MarginContainer/VBoxContainer")
+dlObj = ExtResource("2_8rhti")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="DependancyPopup" type="CenterContainer" parent="CanvasLayer"]
+visible = false
+offset_right = 1154.0
+offset_bottom = 647.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("2_3vi8l")
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/DependancyPopup"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/DependancyPopup/PanelContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DependancyPopup/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Hey! This seems to be your first time
+opening this program... 
+
+To operate you need to install a few 
+dependancies. Specifically YT-DLP to
+download things from youtube and
+FFMPEG to edit audio files.
+
+Would you like to install these automatically?"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Button" type="Button" parent="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Yes"
+
+[node name="Label" type="Label" parent="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "                 "
+
+[node name="Button2" type="Button" parent="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "No"
+
+[node name="DownloadProgress" type="CenterContainer" parent="CanvasLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme = ExtResource("2_3vi8l")
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/DownloadProgress"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/DownloadProgress/PanelContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DownloadProgress/PanelContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/DownloadProgress/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/DownloadProgress/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Downloading..."
+horizontal_alignment = 1
+
+[connection signal="button_down" from="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Button" to="Dependancy" method="yes"]
+[connection signal="button_down" from="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Button2" to="Dependancy" method="no"]
