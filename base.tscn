@@ -1,15 +1,47 @@
-[gd_scene load_steps=5 format=3 uid="uid://bmjae8ddabott"]
+[gd_scene load_steps=30 format=3 uid="uid://bmjae8ddabott"]
 
 [ext_resource type="Script" uid="uid://japyrgl5tisv" path="res://scripts/DownloadManager.gd" id="1_ohhpf"]
-[ext_resource type="Script" uid="uid://ciypir12r106j" path="res://DependancyManager.gd" id="1_rpg24"]
+[ext_resource type="Script" uid="uid://ciypir12r106j" path="res://scripts/DependancyManager.gd" id="1_rpg24"]
 [ext_resource type="Theme" uid="uid://ido4ounyyjb" path="res://main_theme.tres" id="2_3vi8l"]
 [ext_resource type="PackedScene" uid="uid://bot0k3k5e0elj" path="res://downloadObj.tscn" id="2_8rhti"]
+[ext_resource type="Script" uid="uid://s7hx3vn4n7a0" path="res://scripts/ContextManager.gd" id="4_jym3p"]
+[ext_resource type="Script" uid="uid://bgoi7h1ddaeyc" path="res://scripts/ModalManager.gd" id="5_2btif"]
+[ext_resource type="Texture2D" uid="uid://lcv6wohv5gci" path="res://sprites/shuffle-toggle.png" id="5_n73o2"]
+[ext_resource type="Texture2D" uid="uid://bnu4lmu2bnb3v" path="res://sprites/shuffle-normal.png" id="6_cs1hs"]
+[ext_resource type="Texture2D" uid="uid://b6pe2c7p2ba4g" path="res://sprites/paperclip.png" id="6_wudxj"]
+[ext_resource type="Script" uid="uid://nqfn183biwb7" path="res://scripts/song_modal.gd" id="6_yc71e"]
+[ext_resource type="Texture2D" uid="uid://d2xuj51xa0gmp" path="res://sprites/back-normal.png" id="7_v7taj"]
+[ext_resource type="Texture2D" uid="uid://bjreliolluge5" path="res://sprites/back-click.png" id="8_jym3p"]
+[ext_resource type="Texture2D" uid="uid://dw8w1b7galnrv" path="res://sprites/back-hover.png" id="9_50rgw"]
+[ext_resource type="Script" uid="uid://c8r1qrbt52p2q" path="res://scripts/PlaylistModal.gd" id="9_n0uqe"]
+[ext_resource type="Texture2D" uid="uid://htb7ffllwtac" path="res://sprites/pause.png" id="10_4a7sh"]
+[ext_resource type="Script" uid="uid://dih0kawkf3yqb" path="res://scripts/DownloadModal.gd" id="10_7m1qc"]
+[ext_resource type="Texture2D" uid="uid://df5ai3y74kgwo" path="res://sprites/play.png" id="11_1uwki"]
+[ext_resource type="Texture2D" uid="uid://do45hig23e6lj" path="res://sprites/forward-normal.png" id="12_wudxj"]
+[ext_resource type="Texture2D" uid="uid://dnjjfkk5ycfd0" path="res://sprites/forward-click.png" id="13_yc71e"]
+[ext_resource type="Texture2D" uid="uid://ibn6dql86e0b" path="res://sprites/forward-hover.png" id="14_2btif"]
+[ext_resource type="Texture2D" uid="uid://cf06eyi5rsxdd" path="res://sprites/loop-toggle.png" id="15_n0uqe"]
+[ext_resource type="Texture2D" uid="uid://c4feft3dffn3o" path="res://sprites/loop-normal.png" id="16_7m1qc"]
+[ext_resource type="Script" uid="uid://opqrjs513pom" path="res://scripts/SongScroller.gd" id="17_cs1hs"]
+[ext_resource type="Script" uid="uid://cyygpntsbajhp" path="res://scripts/ContextPopup.gd" id="20_50rgw"]
+[ext_resource type="Script" uid="uid://bfiwpaih6b0nv" path="res://scripts/PlaylistManager.gd" id="20_wudxj"]
+[ext_resource type="PackedScene" uid="uid://cwe73j36d16sp" path="res://song.tscn" id="24_song_scene"]
+[ext_resource type="Script" uid="uid://cpy0tkeh1f0mn" path="res://scripts/SongLoader.gd" id="25_song_loader"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_50rgw"]
+bg_color = Color(0.24840015, 0.24840021, 0.24840006, 1)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_yc71e"]
+color = Color(0.27387273, 0.27387273, 0.27387273, 1)
+thickness = 4
 
 [node name="Node2D" type="Node2D"]
 
-[node name="DownloadManager" type="Node2D" parent="." node_paths=PackedStringArray("dependancies")]
+[node name="DownloadManager" type="Node2D" parent="." node_paths=PackedStringArray("songScroller", "dependancies", "modal_manager")]
 script = ExtResource("1_ohhpf")
+songScroller = NodePath("../CanvasLayer/SongScroller")
 dependancies = NodePath("../Dependancy")
+modal_manager = NodePath("../CanvasLayer/MODAL")
 
 [node name="Dependancy" type="Node2D" parent="." node_paths=PackedStringArray("popup", "progress", "progressTarget")]
 script = ExtResource("1_rpg24")
@@ -18,7 +50,9 @@ progress = NodePath("../CanvasLayer/DownloadProgress")
 progressTarget = NodePath("../CanvasLayer/DownloadProgress/PanelContainer/MarginContainer/VBoxContainer")
 dlObj = ExtResource("2_8rhti")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." node_paths=PackedStringArray("popup")]
+script = ExtResource("4_jym3p")
+popup = NodePath("DependancyPopup/Control")
 
 [node name="DependancyPopup" type="CenterContainer" parent="CanvasLayer"]
 visible = false
@@ -74,6 +108,23 @@ text = "                 "
 layout_mode = 2
 text = "No"
 
+[node name="Control" type="PanelContainer" parent="CanvasLayer/DependancyPopup" node_paths=PackedStringArray("spawner")]
+visible = false
+z_index = 4000
+custom_minimum_size = Vector2(240, 0)
+layout_mode = 2
+mouse_filter = 1
+theme = ExtResource("2_3vi8l")
+theme_override_styles/panel = SubResource("StyleBoxFlat_50rgw")
+script = ExtResource("20_50rgw")
+spawner = NodePath("MarginContainer/Spawner")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DependancyPopup/Control"]
+layout_mode = 2
+
+[node name="Spawner" type="VBoxContainer" parent="CanvasLayer/DependancyPopup/Control/MarginContainer"]
+layout_mode = 2
+
 [node name="DownloadProgress" type="CenterContainer" parent="CanvasLayer"]
 visible = false
 anchors_preset = 15
@@ -103,5 +154,401 @@ layout_mode = 2
 text = "Downloading..."
 horizontal_alignment = 1
 
+[node name="MediaControl" type="CenterContainer" parent="CanvasLayer"]
+z_index = 100
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -50.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+size_flags_vertical = 10
+theme = ExtResource("2_3vi8l")
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/MediaControl"]
+custom_minimum_size = Vector2(600, 100)
+layout_mode = 2
+color = Color(0.29219002, 0.29219005, 0.29219002, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="CanvasLayer/MediaControl/ColorRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer"]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 80
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 80
+theme_override_constants/margin_bottom = 0
+
+[node name="timeline" type="HSlider" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+size_flags_vertical = 1
+
+[node name="Label" type="Label" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer2/timeline"]
+layout_mode = 0
+offset_left = -63.0
+offset_top = -1.0
+offset_right = -17.0
+offset_bottom = 19.0
+text = "00:00"
+
+[node name="Label2" type="Label" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer2/timeline"]
+layout_mode = 0
+offset_left = 453.0
+offset_top = -1.0
+offset_right = 499.0
+offset_bottom = 19.0
+text = "4:20"
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="shuffle" type="CheckBox" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme_override_icons/checked = ExtResource("5_n73o2")
+theme_override_icons/unchecked = ExtResource("6_cs1hs")
+
+[node name="back" type="TextureButton" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+texture_normal = ExtResource("7_v7taj")
+texture_pressed = ExtResource("8_jym3p")
+texture_hover = ExtResource("9_50rgw")
+stretch_mode = 5
+
+[node name="media control" type="CheckBox" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_icons/checked = ExtResource("10_4a7sh")
+theme_override_icons/unchecked = ExtResource("11_1uwki")
+
+[node name="forward" type="TextureButton" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+texture_normal = ExtResource("12_wudxj")
+texture_pressed = ExtResource("13_yc71e")
+texture_hover = ExtResource("14_2btif")
+stretch_mode = 3
+
+[node name="loop" type="CheckBox" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+focus_mode = 0
+theme_override_icons/checked = ExtResource("15_n0uqe")
+theme_override_icons/unchecked = ExtResource("16_7m1qc")
+
+[node name="Control" type="Control" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="song title" type="Label" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/Control"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = -31.0
+offset_right = 177.0
+offset_bottom = -11.0
+text = "Song Title Go Here"
+
+[node name="HSlider" type="HSlider" parent="CanvasLayer/MediaControl/ColorRect/CenterContainer/VBoxContainer/Control"]
+layout_mode = 0
+offset_left = 458.0
+offset_top = -34.0
+offset_right = 582.0
+offset_bottom = -18.0
+value = 100.0
+
+[node name="TopBar" type="ColorRect" parent="CanvasLayer"]
+z_index = 100
+offset_left = -7.0
+offset_top = -5.0
+offset_right = 1152.0
+offset_bottom = 71.0
+color = Color(0.21230483, 0.21230483, 0.21230483, 1)
+
+[node name="songTitle" type="RichTextLabel" parent="CanvasLayer/TopBar"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -214.0
+offset_right = 214.0
+offset_bottom = 76.0
+grow_horizontal = 2
+theme = ExtResource("2_3vi8l")
+bbcode_enabled = true
+text = "Testing"
+scroll_active = false
+autowrap_mode = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SongScroller" type="Control" parent="CanvasLayer" node_paths=PackedStringArray("container")]
+z_index = -3
+layout_mode = 3
+anchors_preset = 0
+offset_left = 570.0
+offset_top = 277.0
+offset_right = 610.0
+offset_bottom = 317.0
+script = ExtResource("17_cs1hs")
+container = NodePath("Control")
+radius = 400.0
+spacing_angle = 14.0
+scroll_sensitivity = 0.1
+
+[node name="Control" type="Control" parent="CanvasLayer/SongScroller"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Playlists" type="ColorRect" parent="CanvasLayer" node_paths=PackedStringArray("menu", "song_loader")]
+z_index = 17
+z_as_relative = false
+clip_contents = true
+offset_top = 71.0
+offset_right = 63.0
+offset_bottom = 650.0
+theme = ExtResource("2_3vi8l")
+color = Color(0.2901961, 0.2901961, 0.2901961, 1)
+script = ExtResource("20_wudxj")
+menu = NodePath("MenuScroll/Menu")
+song_loader = NodePath("../SongLoader")
+
+[node name="MenuScroll" type="ScrollContainer" parent="CanvasLayer/Playlists"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 20.0
+offset_right = 296.0
+offset_bottom = 630.0
+horizontal_scroll_mode = 3
+vertical_scroll_mode = 3
+
+[node name="Menu" type="VBoxContainer" parent="CanvasLayer/Playlists/MenuScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="SongLoader" type="Node" parent="CanvasLayer" node_paths=PackedStringArray("song_container", "download_manager")]
+script = ExtResource("25_song_loader")
+song_container = NodePath("../SongScroller/Control")
+song_scene = ExtResource("24_song_scene")
+download_manager = NodePath("../../DownloadManager")
+
+[node name="MODAL" type="Control" parent="CanvasLayer" node_paths=PackedStringArray("song", "playlist", "download")]
+unique_name_in_owner = true
+z_index = 999
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_2btif")
+song = NodePath("SongModal")
+playlist = NodePath("PlaylistModal")
+download = NodePath("DownloadModal")
+
+[node name="SongModal" type="CenterContainer" parent="CanvasLayer/MODAL" node_paths=PackedStringArray("link", "error", "download", "modal_manager")]
+visible = false
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_3vi8l")
+script = ExtResource("6_yc71e")
+link = NodePath("PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/Link")
+error = NodePath("PanelContainer/MarginContainer/VBoxContainer/Error")
+download = NodePath("../../../DownloadManager")
+modal_manager = NodePath("..")
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/MODAL/SongModal"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/MODAL/SongModal/PanelContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MODAL/SongModal/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 35
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 11
+
+[node name="Label" type="Label" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Add some songs by..."
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/Label"]
+z_index = 4
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 0
+offset_left = 2.0
+offset_top = -5.0
+offset_right = 34.0
+offset_bottom = 27.0
+text = "x"
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_yc71e")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 13
+
+[node name="Label" type="Label" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Manually placing mp3s."
+
+[node name="Open Folder" type="Button" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Open Music Folder"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 13
+
+[node name="Label" type="Label" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Youtube Playlist/Song Link."
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Paste" type="Button" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+icon = ExtResource("6_wudxj")
+
+[node name="Link" type="LineEdit" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+placeholder_text = "Youtube Link Here..."
+caret_blink = true
+
+[node name="Go" type="Button" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer"]
+layout_mode = 2
+text = "Go"
+
+[node name="Error" type="RichTextLabel" parent="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer"]
+visible = false
+layout_mode = 2
+bbcode_enabled = true
+text = "[color=red] Invalid youtube link."
+fit_content = true
+autowrap_mode = 0
+horizontal_alignment = 1
+
+[node name="PlaylistModal" type="CenterContainer" parent="CanvasLayer/MODAL"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("9_n0uqe")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MODAL/PlaylistModal"]
+layout_mode = 2
+theme = ExtResource("2_3vi8l")
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/MODAL/PlaylistModal/MarginContainer"]
+layout_mode = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MODAL/PlaylistModal/MarginContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Label" type="Label" parent="CanvasLayer/MODAL/PlaylistModal/MarginContainer/MarginContainer"]
+layout_mode = 2
+text = "Create a New Playlist"
+
+[node name="DownloadModal" type="CenterContainer" parent="CanvasLayer/MODAL"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("2_3vi8l")
+script = ExtResource("10_7m1qc")
+
+[node name="Panel" type="PanelContainer" parent="CanvasLayer/MODAL/DownloadModal"]
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/MODAL/DownloadModal/Panel"]
+layout_mode = 2
+color = Color(0, 0, 0, 1)
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MODAL/DownloadModal/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBox" type="VBoxContainer" parent="CanvasLayer/MODAL/DownloadModal/Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="Song" type="Label" parent="CanvasLayer/MODAL/DownloadModal/Panel/MarginContainer/VBox"]
+layout_mode = 2
+text = "Preparing download..."
+
+[node name="Progress" type="Label" parent="CanvasLayer/MODAL/DownloadModal/Panel/MarginContainer/VBox"]
+layout_mode = 2
+text = "Downloading"
+
+[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer/MODAL/DownloadModal/Panel/MarginContainer/VBox"]
+custom_minimum_size = Vector2(320, 24)
+layout_mode = 2
+
 [connection signal="button_down" from="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Button" to="Dependancy" method="yes"]
 [connection signal="button_down" from="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Button2" to="Dependancy" method="no"]
+[connection signal="home_selected" from="CanvasLayer/Playlists" to="CanvasLayer/SongLoader" method="load_songs"]
+[connection signal="playlist_selected" from="CanvasLayer/Playlists" to="CanvasLayer/SongLoader" method="load_playlist"]
+[connection signal="button_down" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/Label/Button" to="CanvasLayer/MODAL" method="close_modal"]
+[connection signal="button_down" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Open Folder" to="CanvasLayer/MODAL/SongModal" method="_open_folder"]
+[connection signal="button_down" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/Paste" to="CanvasLayer/MODAL/SongModal" method="_paste_link"]
+[connection signal="text_submitted" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/Link" to="CanvasLayer/MODAL/SongModal" method="_link_submitted"]

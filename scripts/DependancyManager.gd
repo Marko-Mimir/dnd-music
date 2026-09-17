@@ -9,8 +9,7 @@ var downloadProgress : Dictionary[String, DownloadObject] = {}
 var active_downloads: Dictionary = {}
 var hasYTDLP : bool
 var hasFFMPG : bool
-
-signal hasDependencies
+var hasDependencies := false
 
 func _ready() -> void:
 	var dir = DirAccess.open("user://")
@@ -33,7 +32,7 @@ func _ready() -> void:
 	
 	if fmp and yt:
 		print('Has all dependencies!')
-		hasDependencies.emit()
+		hasDependencies = true
 
 func _process(_delta: float) -> void:
 	if active_downloads.is_empty():
@@ -120,7 +119,7 @@ func complete(result, _response_code, headers, _body, http, fileName):
 	if fileName == "ffmpeg.zip":
 		UnpackFFMPEG()
 	if hasFFMPG:
-		hasDependencies.emit()
+		hasDependencies = true
 	if http:
 		http.queue_free()
 
@@ -141,7 +140,7 @@ func processFFMPEG():
 		print(res)
 	DirAccess.remove_absolute("user://dependencies/ffmpeg.zip")
 	UTIL.delete_dir("user://temp")
-	hasDependencies.emit()
+	hasDependencies = true
 
 func yes() -> void:
 	print("User confirmed.")

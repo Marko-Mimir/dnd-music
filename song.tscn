@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3 uid="uid://cwe73j36d16sp"]
+
+[ext_resource type="Theme" uid="uid://ido4ounyyjb" path="res://main_theme.tres" id="1_ua7c2"]
+[ext_resource type="Script" path="res://scripts/Song.gd" id="2_song"]
+
+[node name="Control" type="PanelContainer"]
+custom_minimum_size = Vector2(470, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -682.0
+offset_bottom = -584.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_ua7c2")
+script = ExtResource("2_song")
+actions = Array[String](["Play", "Fade into Song", "Add to Playlist", "Edit Description"])
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+text = "Song Name
+	"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+text = "Durration
+"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+bbcode_enabled = true
+text = "Description"
+fit_content = true

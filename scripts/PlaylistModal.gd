@@ -1,0 +1,2 @@
+extends Modal
+class_name PlaylistModal
