@@ -4,7 +4,7 @@ class_name DownloadManager
 signal progress_updated(song_name: String, percent: float, item: int, total: int)
 signal download_finished
 
-@export var songScroller : SongManager
+@export var songLoader : SongLoader
 @export var dependancies : DependancyManager
 @export var modal_manager: ModalManager
 @export var music_directory := "user://music"
@@ -123,7 +123,7 @@ func _on_progress_updated(song_name: String, percent: float, item: int, total: i
 func _on_download_finished() -> void:
 	if modal_manager != null:
 		modal_manager.download.reset()
-		songScroller.refresh_items()
+		songLoader.load_songs()
 		
 
 func _exit_tree() -> void:

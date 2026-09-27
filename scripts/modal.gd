@@ -1,4 +1,4 @@
-extends Node
+extends Control
 class_name Modal
 
 func reset():

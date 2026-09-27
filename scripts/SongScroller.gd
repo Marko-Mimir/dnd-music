@@ -10,26 +10,28 @@ class_name SongManager
 
 var current_index: float = 0.0
 var scroll_velocity: float = 0.0
-var items: Array[Control] = []
+var items: Array[Song] = []
 var _refresh_generation := 0
 
 
 func _ready() -> void:
 	refresh_items()
 
+
+
 func refresh_items() -> void:
 	_refresh_generation += 1
 	var generation := _refresh_generation
 	items.clear()
 	for child in container.get_children():
-		if child is Control:
+		if child is Song:
 			items.append(child)
-
+	
 	await get_tree().process_frame
 	await get_tree().process_frame
 	if generation != _refresh_generation:
 		return
-
+	
 	for item in items:
 		if not is_instance_valid(item):
 			continue
@@ -69,10 +71,10 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _update_menu_positions() -> void:
-	var valid_items: Array[Control] = []
+	var valid_items: Array[Song] = []
 	for item in items:
-		if is_instance_valid(item) and item is Control:
-			valid_items.append(item as Control)
+		if is_instance_valid(item) and item is Song:
+			valid_items.append(item as Song)
 	items = valid_items
 	var viewport_size: Vector2 = get_viewport_rect().size
 	var screen_center: Vector2 = viewport_size * 0.5
@@ -81,6 +83,10 @@ func _update_menu_positions() -> void:
 	for i in range(items.size()):
 		var item: Control = items[i]
 		if not is_instance_valid(item):
+			continue
+		var song := item as Song
+		if song != null and not song.display_enabled:
+			item.visible = false
 			continue
 
 		var rel: float = float(i) - current_index

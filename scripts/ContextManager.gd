@@ -50,12 +50,13 @@ func _input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			if popup.visible:
 				popup.kill()
-			if hover_target == null:
+			var target := _check_hover_target(event.position)
+			if target == null:
 				return
 			
-			menu_target = hover_target
+			menu_target = target
 			popup.build_menu(menu_target, menu_target.get_context_actions())
-			popup.global_position = get_viewport().get_mouse_position()
+			popup.global_position = event.position
 			popup.move_to_front()
 		#if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			#if popup.visible:

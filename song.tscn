@@ -1,9 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://cwe73j36d16sp"]
+[gd_scene load_steps=4 format=3 uid="uid://cwe73j36d16sp"]
 
 [ext_resource type="Theme" uid="uid://ido4ounyyjb" path="res://main_theme.tres" id="1_ua7c2"]
-[ext_resource type="Script" path="res://scripts/Song.gd" id="2_song"]
+[ext_resource type="Script" uid="uid://b0tb6vlnudlxk" path="res://scripts/Song.gd" id="2_song"]
 
-[node name="Control" type="PanelContainer"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vpwdm"]
+bg_color = Color(0, 0, 0, 1)
+
+[node name="Control" type="PanelContainer" node_paths=PackedStringArray("button", "nameEdit", "title", "SelectedRect", "durration")]
 custom_minimum_size = Vector2(470, 0)
 anchors_preset = 15
 anchor_right = 1.0
@@ -14,13 +17,20 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_ua7c2")
 script = ExtResource("2_song")
-actions = Array[String](["Play", "Fade into Song", "Add to Playlist", "Edit Description"])
+button = NodePath("Button")
+nameEdit = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Name Edit")
+title = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Title")
+SelectedRect = NodePath("SelectedRect")
+durration = NodePath("MarginContainer/VBoxContainer/HBoxContainer/Durration")
+actions = Array[String](["Play", "Fade into Song", "Add to Playlist", "Rename", "Edit Description", "Show in Explorer"])
 
 [node name="Button" type="Button" parent="."]
 layout_mode = 2
+focus_mode = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
@@ -28,35 +38,54 @@ theme_override_constants/margin_bottom = 10
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
+mouse_filter = 2
 
-[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Title" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-mouse_filter = 1
-text = "Song Name
-	"
+mouse_filter = 2
+text = "Song Name"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 
+[node name="Name Edit" type="LineEdit" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_styles/normal = SubResource("StyleBoxFlat_vpwdm")
+placeholder_text = "Name..."
+
 [node name="VSeparator" type="VSeparator" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-mouse_filter = 1
+mouse_filter = 2
 
-[node name="RichTextLabel2" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="Durration" type="RichTextLabel" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-mouse_filter = 1
+mouse_filter = 2
 text = "Durration
 "
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 
-[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+[node name="Description" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-mouse_filter = 1
+mouse_filter = 2
 bbcode_enabled = true
-text = "Description"
+text = " "
 fit_content = true
+
+[node name="SelectedRect" type="ColorRect" parent="."]
+visible = false
+layout_mode = 2
+mouse_filter = 2
+color = Color(0, 0.3254902, 0, 0.25490198)
+
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/HBoxContainer/Name Edit" to="." method="name_text_changed"]
+[connection signal="text_submitted" from="MarginContainer/VBoxContainer/HBoxContainer/Name Edit" to="." method="_text_submitted"]

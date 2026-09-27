@@ -13,6 +13,30 @@ func extract_zip(path : String, dest : String):
 	print("Zip Unpacked!")
 	zip_unpacked.emit()
 
+func importSong(path) -> AudioStreamMP3:
+	var stream := AudioStreamMP3.new()
+	var file = FileAccess.open(path, FileAccess.READ)
+	if file == null: return null;
+	
+	stream.data = file.get_buffer(file.get_length())
+	return stream
+
+func get_durration(stream : AudioStream) -> String:
+	if stream == null:
+		return "00:00"
+	var total_seconds: float = stream.get_length()
+	var minutes: int = int(total_seconds) / 60
+	var seconds: int = int(total_seconds) % 60
+	return "%02d:%02d" % [minutes, seconds]
+
+func get_current_time(stream : AudioStreamPlayer2D) -> String:
+	if stream == null:
+		return "00:00"
+	var total_seconds: float = stream.get_playback_position()
+	var minutes: int = int(total_seconds) / 60
+	var seconds: int = int(total_seconds) % 60
+	return "%02d:%02d" % [minutes, seconds]
+
 func _unpack(path : String, dest : String):
 	var reader = ZIPReader.new()
 	if reader.open(path) != OK:

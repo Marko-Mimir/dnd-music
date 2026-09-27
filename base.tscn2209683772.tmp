@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://bmjae8ddabott"]
+[gd_scene load_steps=32 format=3 uid="uid://bmjae8ddabott"]
 
 [ext_resource type="Script" uid="uid://japyrgl5tisv" path="res://scripts/DownloadManager.gd" id="1_ohhpf"]
 [ext_resource type="Script" uid="uid://ciypir12r106j" path="res://scripts/DependancyManager.gd" id="1_rpg24"]
@@ -12,7 +12,6 @@
 [ext_resource type="Script" uid="uid://nqfn183biwb7" path="res://scripts/song_modal.gd" id="6_yc71e"]
 [ext_resource type="Script" uid="uid://wchiriplihjw" path="res://scripts/mediaControl.gd" id="7_mh4ky"]
 [ext_resource type="Texture2D" uid="uid://d2xuj51xa0gmp" path="res://sprites/back-normal.png" id="7_v7taj"]
-[ext_resource type="Script" uid="uid://l6a4qnrhl41e" path="res://scripts/MusicSlider.gd" id="8_3vupj"]
 [ext_resource type="Texture2D" uid="uid://bjreliolluge5" path="res://sprites/back-click.png" id="8_jym3p"]
 [ext_resource type="Texture2D" uid="uid://dw8w1b7galnrv" path="res://sprites/back-hover.png" id="9_50rgw"]
 [ext_resource type="Script" uid="uid://c8r1qrbt52p2q" path="res://scripts/PlaylistModal.gd" id="9_n0uqe"]
@@ -40,8 +39,9 @@ thickness = 4
 
 [node name="Node2D" type="Node2D"]
 
-[node name="DownloadManager" type="Node2D" parent="." node_paths=PackedStringArray("dependancies", "modal_manager")]
+[node name="DownloadManager" type="Node2D" parent="." node_paths=PackedStringArray("songScroller", "dependancies", "modal_manager")]
 script = ExtResource("1_ohhpf")
+songScroller = NodePath("../CanvasLayer/SongScroller")
 dependancies = NodePath("../Dependancy")
 modal_manager = NodePath("../CanvasLayer/MODAL")
 
@@ -157,7 +157,7 @@ layout_mode = 2
 text = "Downloading..."
 horizontal_alignment = 1
 
-[node name="Media" type="CenterContainer" parent="CanvasLayer" node_paths=PackedStringArray("audio", "durration", "currentTime", "title", "media", "shuffle", "loop", "timeline")]
+[node name="Media" type="CenterContainer" parent="CanvasLayer" node_paths=PackedStringArray("audio", "durration", "currentTime", "title", "media", "shuffle", "loop")]
 z_index = 1000
 z_as_relative = false
 anchors_preset = 12
@@ -179,7 +179,6 @@ title = NodePath("ColorRect/CenterContainer/VBoxContainer/Control/Control/title"
 media = NodePath("ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer/media control")
 shuffle = NodePath("ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer/shuffle")
 loop = NodePath("ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer/loop")
-timeline = NodePath("ColorRect/CenterContainer/VBoxContainer/MarginContainer2/timeline")
 
 [node name="AudioStream" type="AudioStreamPlayer2D" parent="CanvasLayer/Media"]
 
@@ -212,7 +211,6 @@ theme_override_constants/margin_bottom = 0
 layout_mode = 2
 size_flags_vertical = 1
 max_value = 0.0
-script = ExtResource("8_3vupj")
 
 [node name="CurrentTIME" type="Label" parent="CanvasLayer/Media/ColorRect/CenterContainer/VBoxContainer/MarginContainer2/timeline"]
 layout_mode = 0
@@ -304,9 +302,7 @@ offset_left = 458.0
 offset_top = -34.0
 offset_right = 582.0
 offset_bottom = -18.0
-max_value = 2.0
-step = 0.01
-value = 1.0
+value = 100.0
 
 [node name="TopBar" type="ColorRect" parent="CanvasLayer"]
 z_index = 100
@@ -383,13 +379,12 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="SongLoader" type="Node" parent="CanvasLayer" node_paths=PackedStringArray("song_container", "media", "download_manager", "scroller")]
+[node name="SongLoader" type="Node" parent="CanvasLayer" node_paths=PackedStringArray("song_container", "media", "download_manager")]
 script = ExtResource("25_song_loader")
 song_container = NodePath("../SongScroller/Control")
 song_scene = ExtResource("24_song_scene")
 media = NodePath("../Media")
 download_manager = NodePath("../../DownloadManager")
-scroller = NodePath("../SongScroller")
 
 [node name="MODAL" type="Control" parent="CanvasLayer" node_paths=PackedStringArray("song", "playlist", "download")]
 unique_name_in_owner = true
@@ -587,17 +582,10 @@ layout_mode = 2
 
 [connection signal="button_down" from="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Button" to="Dependancy" method="yes"]
 [connection signal="button_down" from="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Button2" to="Dependancy" method="no"]
-[connection signal="next_song" from="CanvasLayer/Media" to="CanvasLayer/SongLoader" method="next_song"]
-[connection signal="previous_song" from="CanvasLayer/Media" to="CanvasLayer/SongLoader" method="last_song"]
-[connection signal="finished" from="CanvasLayer/Media/AudioStream" to="CanvasLayer/Media" method="audio_ended"]
-[connection signal="button_down" from="CanvasLayer/Media/ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer/back" to="CanvasLayer/Media" method="reverse"]
 [connection signal="toggled" from="CanvasLayer/Media/ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer/media control" to="CanvasLayer/Media" method="media_control_toggled"]
-[connection signal="button_down" from="CanvasLayer/Media/ColorRect/CenterContainer/VBoxContainer/MarginContainer/HBoxContainer/forward" to="CanvasLayer/Media" method="skip"]
-[connection signal="value_changed" from="CanvasLayer/Media/ColorRect/CenterContainer/VBoxContainer/Control/volume" to="CanvasLayer/Media" method="volume_changed"]
-[connection signal="home_selected" from="CanvasLayer/Playlists" to="CanvasLayer/SongLoader" method="display_songs"]
-[connection signal="playlist_selected" from="CanvasLayer/Playlists" to="CanvasLayer/SongLoader" method="display_songs"]
+[connection signal="home_selected" from="CanvasLayer/Playlists" to="CanvasLayer/SongLoader" method="load_songs"]
+[connection signal="playlist_selected" from="CanvasLayer/Playlists" to="CanvasLayer/SongLoader" method="load_playlist"]
 [connection signal="button_down" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/Label/Button" to="CanvasLayer/MODAL" method="close_modal"]
 [connection signal="button_down" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer/Open Folder" to="CanvasLayer/MODAL/SongModal" method="_open_folder"]
 [connection signal="button_down" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/Paste" to="CanvasLayer/MODAL/SongModal" method="_paste_link"]
 [connection signal="text_submitted" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/Link" to="CanvasLayer/MODAL/SongModal" method="_link_submitted"]
-[connection signal="button_down" from="CanvasLayer/MODAL/SongModal/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/VBoxContainer2/HBoxContainer/Go" to="CanvasLayer/MODAL/SongModal" method="go"]

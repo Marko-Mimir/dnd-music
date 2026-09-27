@@ -3,10 +3,16 @@ class_name SongLoader
 
 @export var song_container: Control
 @export var song_scene: PackedScene
+@export var media : MediaController
 @export var download_manager: DownloadManager
+@export var scroller : SongManager
 
 var songs: Dictionary[int, Song] = {}
-var _loaded_paths: Array[String] = []
+var current : Song = null
+var _paths_by_id: Dictionary[int, String] = {}
+var current_playlist : Array[int]
+var queue : Array[int]
+var previous : Array[int]
 
 func _ready() -> void:
 	if song_container == null or song_scene == null:
@@ -16,6 +22,24 @@ func _ready() -> void:
 		push_error("SongLoader requires a download manager.")
 		return
 	load_songs()
+
+func song_renamed(_old_path: String, new_path: String, song: Song) -> void:
+	var id: int = song.song_id
+	if songs.get(id) != song:
+		return
+	_paths_by_id[id] = new_path
+
+func song_pressed(song: Song) -> void:
+	var path: String = song.file_path
+	if current:
+		current.select = false
+	song.select = true
+	current = song
+	if song.fade:
+		media.fade_into_song(path)
+		song.fade = false
+		return
+	media.play_song(path)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_IN:
@@ -35,37 +59,94 @@ func load_songs() -> void:
 			paths.append(_music_directory().path_join(file_name))
 	paths.sort()
 
-	if paths == _loaded_paths:
-		return
-
-	var temp: Dictionary[int, Song] = {}
+	var changed: bool = false
 	for path in paths:
-		var id := _song_id(path)
+		var id: int = _find_song_id(path)
+		if id == -1:
+			id = _song_id(path)
+		if songs.has(id):
+			continue
 		var tile := song_scene.instantiate() as Song
 		if tile == null:
 			push_error("Song scene root must use Song.gd.")
-			return
+			continue
 		tile.setup(id, path)
-		temp[id] = tile
-
-	for child in song_container.get_children():
-		child.queue_free()
-	songs = temp
-	_loaded_paths = paths
-	for tile in songs.values():
+		tile.button.pressed.connect(song_pressed.bind(tile))
+		tile.path_changed.connect(song_renamed)
+		songs[id] = tile
+		_paths_by_id[id] = path
 		song_container.add_child(tile)
+		changed = true
 
-	var scroller := song_container.get_parent() as Node
-	if scroller != null and scroller.has_method("refresh_items"):
-		scroller.call_deferred("refresh_items")
+	var ids_to_remove: Array[int] = []
+	for id in songs:
+		if not paths.has(_paths_by_id[id]):
+			ids_to_remove.append(id)
 
-func load_playlist(song_ids: Array[int]) -> void:
-	var ordered_tiles: Array[Song] = []
-	for id in song_ids:
-		if songs.has(id):
-			ordered_tiles.append(songs[id])
-	print("Loading playlist song ids: ", song_ids)
-	print("Resolved playlist songs: ", ordered_tiles.size())
+	for id in ids_to_remove:
+		var tile: Song = songs[id]
+		if current == tile:
+			current = null
+		songs.erase(id)
+		_paths_by_id.erase(id)
+		tile.queue_free()
+		changed = true
+
+	if changed:
+		_refresh_scroller()
+
+func next_song():
+	if media.loop.button_pressed and current:
+		media.play_song(current.file_path)
+		previous.push_front(current.song_id)
+		return
+	if queue.is_empty():
+		if current_playlist.is_empty():
+			queue = songs.keys().duplicate_deep()
+	if media.shuffle.button_pressed:
+		queue.shuffle()
+		song_pressed(songs[queue[0]])
+		previous.push_front(queue[0])
+		queue.pop_front()
+		return
+	var val = queue.find(current.song_id)+1
+	previous.push_front(current.song_id)
+	if val >= len(queue):
+		song_pressed(songs[queue[0]])
+	else:
+		song_pressed(songs[queue[val]])
+
+func last_song():
+	if previous.is_empty():
+		media.audio.play(0)
+		return
+	song_pressed(songs[previous[0]])
+	if media.shuffle.button_pressed:
+		queue.push_front(previous.pop_front())
+	else:
+		previous.pop_front()
+
+func display_songs(ids: Array[int] = []) -> void:
+	current_playlist = ids
+	var show_all: bool = ids.is_empty()
+	var visible_ids: Dictionary[int, bool] = {}
+	for id in ids:
+		visible_ids[id] = true
+
+	for id in songs:
+		var tile: Song = songs[id]
+		if is_instance_valid(tile):
+			tile.display_enabled = show_all or visible_ids.has(id)
+			tile.visible = tile.display_enabled
+
+func _refresh_scroller() -> void:
+	scroller.call_deferred("refresh_items")
+
+func _find_song_id(path: String) -> int:
+	for id in _paths_by_id:
+		if _paths_by_id[id] == path:
+			return id
+	return -1
 
 func _song_id(path: String) -> int:
 	return abs(hash(path))

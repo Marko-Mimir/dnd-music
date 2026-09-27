@@ -30,3 +30,7 @@ func _start_download() -> void:
 	download.download_mp3(res.get_string())
 	if modal_manager != null:
 		modal_manager.open_modal(ModalManager.Modals.DOWNLOAD)
+
+
+func go() -> void:
+	_start_download()

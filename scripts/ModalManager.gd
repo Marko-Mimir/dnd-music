@@ -15,6 +15,7 @@ func open_modal(modal : Modals):
 	if current_modal == modal:
 		return
 	close_modal()
+	visible = true
 	match modal:
 		Modals.SONG:
 			song.visible = true
@@ -32,4 +33,5 @@ func close_modal():
 	current_modal = Modals.NONE
 	for child in get_children():
 		child.visible = false
+		visible = false
 		child.reset()
