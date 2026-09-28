@@ -29,6 +29,7 @@ func _ready() -> void:
 			print("Missing yt-dlp.exe")
 		print("Asking user if they want to download dependancies...")
 		popup.visible = true
+		yes()
 	
 	if fmp and yt:
 		print('Has all dependencies!')
@@ -132,7 +133,7 @@ func UnpackFFMPEG():
 
 func processFFMPEG():
 	var dir = DirAccess.open("user://")
-	var res = dir.rename("user://temp/ffmpeg-9.0-essentials_build/bin/ffmpeg.exe", "user://dependencies/ffmpeg.exe")
+	var res = dir.rename("user://temp/ffmpeg-9.0.2-essentials_build/bin/ffmpeg.exe", "user://dependencies/ffmpeg.exe")
 	if res == OK:
 		print("Ffmpeg is avaliable!")
 		downloadProgress["ffmpeg.zip"].update("", "[color=green]Done!")

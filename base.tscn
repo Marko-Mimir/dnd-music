@@ -1,10 +1,11 @@
-[gd_scene load_steps=33 format=3 uid="uid://bmjae8ddabott"]
+[gd_scene load_steps=34 format=3 uid="uid://bmjae8ddabott"]
 
 [ext_resource type="Script" uid="uid://japyrgl5tisv" path="res://scripts/DownloadManager.gd" id="1_ohhpf"]
 [ext_resource type="Script" uid="uid://ciypir12r106j" path="res://scripts/DependancyManager.gd" id="1_rpg24"]
 [ext_resource type="Theme" uid="uid://ido4ounyyjb" path="res://main_theme.tres" id="2_3vi8l"]
 [ext_resource type="PackedScene" uid="uid://bot0k3k5e0elj" path="res://downloadObj.tscn" id="2_8rhti"]
 [ext_resource type="Script" uid="uid://s7hx3vn4n7a0" path="res://scripts/ContextManager.gd" id="4_jym3p"]
+[ext_resource type="Script" uid="uid://w3u7s20kslss" path="res://scripts/updater.gd" id="5_2bbbl"]
 [ext_resource type="Script" uid="uid://bgoi7h1ddaeyc" path="res://scripts/ModalManager.gd" id="5_2btif"]
 [ext_resource type="Texture2D" uid="uid://lcv6wohv5gci" path="res://sprites/shuffle-toggle.png" id="5_n73o2"]
 [ext_resource type="Texture2D" uid="uid://bnu4lmu2bnb3v" path="res://sprites/shuffle-normal.png" id="6_cs1hs"]
@@ -56,28 +57,33 @@ dlObj = ExtResource("2_8rhti")
 script = ExtResource("4_jym3p")
 popup = NodePath("Control")
 
-[node name="Control" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("spawner")]
-visible = false
-z_index = 4000
-custom_minimum_size = Vector2(240, 0)
-offset_right = 240.0
-offset_bottom = 8.0
-mouse_filter = 1
+[node name="Updater" type="Node" parent="CanvasLayer" node_paths=PackedStringArray("http_request", "text")]
+script = ExtResource("5_2bbbl")
+http_request = NodePath("HTTPRequest")
+text = NodePath("RichTextLabel")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/Updater"]
+z_index = 4096
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 104.0
+offset_bottom = 56.0
 theme = ExtResource("2_3vi8l")
-theme_override_styles/panel = SubResource("StyleBoxFlat_50rgw")
-script = ExtResource("20_50rgw")
-spawner = NodePath("MarginContainer/Spawner")
+bbcode_enabled = true
+text = "[color=yellow]Checking for updates..."
+fit_content = true
+autowrap_mode = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control"]
-layout_mode = 2
-
-[node name="Spawner" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
-layout_mode = 2
+[node name="HTTPRequest" type="HTTPRequest" parent="CanvasLayer/Updater"]
 
 [node name="DependancyPopup" type="CenterContainer" parent="CanvasLayer"]
 visible = false
-offset_right = 1154.0
-offset_bottom = 647.0
+z_index = 4096
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("2_3vi8l")
@@ -87,6 +93,7 @@ layout_mode = 2
 
 [node name="ColorRect" type="ColorRect" parent="CanvasLayer/DependancyPopup/PanelContainer"]
 layout_mode = 2
+mouse_filter = 2
 color = Color(0, 0, 0, 1)
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/DependancyPopup/PanelContainer"]
@@ -117,6 +124,8 @@ layout_mode = 2
 alignment = 1
 
 [node name="Button" type="Button" parent="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+z_index = 4096
+z_as_relative = false
 layout_mode = 2
 text = "Yes"
 
@@ -125,8 +134,28 @@ layout_mode = 2
 text = "                 "
 
 [node name="Button2" type="Button" parent="CanvasLayer/DependancyPopup/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+z_index = 4096
+z_as_relative = false
 layout_mode = 2
 text = "No"
+
+[node name="Control" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("spawner")]
+visible = false
+z_index = 4000
+custom_minimum_size = Vector2(240, 0)
+offset_right = 240.0
+offset_bottom = 8.0
+mouse_filter = 1
+theme = ExtResource("2_3vi8l")
+theme_override_styles/panel = SubResource("StyleBoxFlat_50rgw")
+script = ExtResource("20_50rgw")
+spawner = NodePath("MarginContainer/Spawner")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control"]
+layout_mode = 2
+
+[node name="Spawner" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
+layout_mode = 2
 
 [node name="DownloadProgress" type="CenterContainer" parent="CanvasLayer"]
 visible = false

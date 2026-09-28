@@ -9,7 +9,7 @@ class_name SongModal
 var rx = RegEx.new()
 
 func _ready() -> void:
-	rx.compile("(?:https?://)?(?:m\\.|www\\.)?(?:youtu\\.be/|youtube\\.com/(?:embed/|v/|watch\\?v=|watch\\?.+&v=))([\\w-]{11})(?:\\S+)?")
+	rx.compile("^(?:https?://)?(?:m\\.|www\\.)?(?:youtube\\.com|youtu\\.be)/\\S+$")
 
 func _open_folder() -> void:
 	OS.shell_show_in_file_manager(ProjectSettings.globalize_path("user://music"))

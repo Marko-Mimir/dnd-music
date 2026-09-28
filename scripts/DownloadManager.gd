@@ -38,13 +38,17 @@ func ytdl_worker(link : String) -> void:
 	var ytdlp_path: String = ProjectSettings.globalize_path("user://dependencies/yt-dlp.exe")
 	var ffmpeg_dir: String = ProjectSettings.globalize_path("user://dependencies")
 	var output_dir: String = ProjectSettings.globalize_path(music_directory.path_join("%(title)s.%(ext)s"))
-	var args : PackedStringArray = [
-		link,
-		"--extract-audio",
-		"--audio-format", "mp3",
-		"--ffmpeg-location", ffmpeg_dir,
-		"-o", output_dir,
-		"--newline"
+	var args : PackedStringArray = [ 
+		"--sleep-interval", "1", 
+		"--max-sleep-interval", "9", 
+		"--ignore-errors", 
+		"--force-ipv4", 
+		link, 
+		"--extract-audio", 
+		"--audio-format", "mp3", 
+		"--ffmpeg-location", ffmpeg_dir, 
+		"-o", output_dir, 
+	    "--newline" 
 	]
 	
 	print_rich("[color=yellow]Thread started. Executing yt-dlp...[/color]")
